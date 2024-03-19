@@ -1,9 +1,9 @@
 from tkinter import *
 from tkinter import ttk
+import socket
 
 # copied directly from port2port
 
-# import socket
 # s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 # LOCALHOST = '127.0.0.1'
 # port = 3310
@@ -13,11 +13,13 @@ from tkinter import ttk
 # print("enter 'EXIT' to leave the program  \n")
 
 
-
 def appendSatellite(*args):
     try: 
         value = iridiumSatellite.get()
         setSatellite.set(value)
+        root.bind("<Return>", appendLatitude)
+        latidue_entry.focus()
+
     except ValueError:
         pass
 
@@ -25,6 +27,8 @@ def appendLatitude(*args):
     try: 
         value = latidue.get()
         setLatidude.set(value)
+        root.bind("<Return>", appendLongitude)
+        longitude_entry.focus()
     except ValueError:
         pass
 
@@ -32,6 +36,8 @@ def appendLongitude(*args):
     try: 
         value = longitude.get()
         setLongitude.set(value)
+        root.bind("<Return>", appendElevation)
+        elevation_entry.focus()
     except ValueError:
         pass
 
@@ -50,11 +56,9 @@ def combineElements():
         v4 = setElevation.get()
         value = v1 + ", " + v2 + ", " + v3 + ", " + v4
         clientCommand.set(value)
-        print(clientCommand)
     except ValueError:
         pass
     
-
 root = Tk()
 root.title("MOSAIC GUI 1.0")
 
@@ -71,6 +75,7 @@ setSatellite = StringVar()
 ttk.Label(mainframe, textvariable=setSatellite).grid(column=1, row=2, sticky=(W, E))
 ttk.Button(mainframe, text="Set Satellite", command=appendSatellite).grid(column=1, row=3, sticky=W)
 
+
 # get latitude 
 latidue = StringVar()
 latidue_entry = ttk.Entry(mainframe, width=7, textvariable=latidue)
@@ -78,6 +83,7 @@ latidue_entry.grid(column=2, row=1, sticky=(W, E))
 setLatidude = StringVar()
 ttk.Label(mainframe, textvariable=setLatidude).grid(column=2, row=2, sticky=(W, E))
 ttk.Button(mainframe, text="Set Latitude", command=appendLatitude).grid(column=2, row=3, sticky=W)
+
 
 # get longitude 
 longitude = StringVar()
@@ -105,16 +111,8 @@ for child in mainframe.winfo_children():
     child.grid_configure(padx=5, pady=5)
 
 Satellite_entry.focus()
-
 root.bind("<Return>", appendSatellite)
-if(setSatellite == iridiumSatellite):
-    root.bind("<Return>", appendLatitude)
-if(setLatidude == latidue):
-    root.bind("<Return>", appendLongitude)
-if(setLongitude == longitude):
-    root.bind("<Return>", appendElevation)
-if(setElevation == elevation):
-    root.bind("<Return>", combineElements)
+
 
 
 
