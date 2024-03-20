@@ -1,17 +1,43 @@
 from tkinter import *
 from tkinter import ttk
 import socket
+import threading
 
 # copied directly from port2port
 
-# s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-# LOCALHOST = '127.0.0.1'
-# port = 3310
+HOST = '127.0.0.1'  # Localhost
+PORT = 3310  # Port to connect to
 
-# s.connect((LOCALHOST,port))
-# print("New client created: " )
-# print("enter 'EXIT' to leave the program  \n")
+# Connect to the server
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client.connect((HOST, PORT))
 
+# def send_message():
+#     while True:
+#         try:
+#             message = input("Enter your message: ")
+#             client.send(message.encode('utf-8'))
+#             if message.lower() == 'exit':
+#                 break
+#         except Exception as e:
+#             print("An error occurred:", str(e))
+#             break
+
+
+def receive_message():
+    while True:
+        try:
+            data = client.recv(1024).decode('utf-8')
+            if not data:
+                print("Disconnected from server.")
+                break
+            print("Received:", data)
+            receive_thread.set(data)
+            # if data.lower() == 'exit':
+            break
+        except Exception as e:
+            print("An error occurred:", str(e))
+            break
 
 def appendSatellite(*args):
     try: 
@@ -54,15 +80,30 @@ def combineElements():
         v2 = setLatidude.get()
         v3 = setLongitude.get()
         v4 = setElevation.get()
+        thread = receive_thread.get()
         value = v1 + ", " + v2 + ", " + v3 + ", " + v4
         clientCommand.set(value)
+        client.send(value.encode('utf-8'))
+        data = client.recv(1024).decode('utf-8')
+        if not data:
+            print("Disconnected from server.")
+                
+        print("Received:", data)
+        receive_thread.set(data)
+            # if data.lower() == 'exit':
+            
+        # thread = threading.Thread(target=receive_message)
+        # thread.start()
+        # thread.join()
+        # print(receive_thread)
     except ValueError:
         pass
     
 root = Tk()
 root.title("MOSAIC GUI 1.0")
+receive_thread = StringVar()
 
-mainframe = ttk.Frame(root, padding="4 4 12 12")
+mainframe = ttk.Frame(root, padding="5 5 12 12")
 mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
 root.columnconfigure(0, weight=1)
 root.rowconfigure(0, weight=1)
@@ -106,6 +147,12 @@ clientCommand = StringVar()
 ttk.Button(mainframe, text="Send command", command=combineElements).grid(column=4, row=4, sticky=W)
 ttk.Label(mainframe, textvariable=clientCommand).grid(column=2, row=4, sticky=(W, E))
 
+# display recieved text from server
+# receive_thread = threading.Thread(target=receive_message)
+# receive_thread.start()
+# receive_thread.join()
+ttk.Label(mainframe, textvariable=receive_thread).grid(column=3, row=5, sticky=(W, E))
+
 
 for child in mainframe.winfo_children(): 
     child.grid_configure(padx=5, pady=5)
@@ -113,7 +160,18 @@ for child in mainframe.winfo_children():
 Satellite_entry.focus()
 root.bind("<Return>", appendSatellite)
 
+# # Create two threads for sending and receiving messages
+# send_thread = threading.Thread(target=send_message)
 
+# # Start the threads
+# send_thread.start()
+
+# # Join the threads
+# send_thread.join()
+# receive_thread.join()
+
+# # Close the client socket
+# client.close()
 
 
 
