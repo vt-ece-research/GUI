@@ -12,32 +12,6 @@ PORT = 3310  # Port to connect to
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect((HOST, PORT))
 
-# def send_message():
-#     while True:
-#         try:
-#             message = input("Enter your message: ")
-#             client.send(message.encode('utf-8'))
-#             if message.lower() == 'exit':
-#                 break
-#         except Exception as e:
-#             print("An error occurred:", str(e))
-#             break
-
-
-def receive_message():
-    while True:
-        try:
-            data = client.recv(1024).decode('utf-8')
-            if not data:
-                print("Disconnected from server.")
-                break
-            print("Received:", data)
-            receive_thread.set(data)
-            # if data.lower() == 'exit':
-            break
-        except Exception as e:
-            print("An error occurred:", str(e))
-            break
 
 def appendSatellite(*args):
     try: 
@@ -90,12 +64,7 @@ def combineElements():
                 
         print("Received:", data)
         receive_thread.set(data)
-            # if data.lower() == 'exit':
-            
-        # thread = threading.Thread(target=receive_message)
-        # thread.start()
-        # thread.join()
-        # print(receive_thread)
+
     except ValueError:
         pass
     
@@ -147,10 +116,6 @@ clientCommand = StringVar()
 ttk.Button(mainframe, text="Send command", command=combineElements).grid(column=4, row=4, sticky=W)
 ttk.Label(mainframe, textvariable=clientCommand).grid(column=2, row=4, sticky=(W, E))
 
-# display recieved text from server
-# receive_thread = threading.Thread(target=receive_message)
-# receive_thread.start()
-# receive_thread.join()
 ttk.Label(mainframe, textvariable=receive_thread).grid(column=3, row=5, sticky=(W, E))
 
 
@@ -159,21 +124,5 @@ for child in mainframe.winfo_children():
 
 Satellite_entry.focus()
 root.bind("<Return>", appendSatellite)
-
-# # Create two threads for sending and receiving messages
-# send_thread = threading.Thread(target=send_message)
-
-# # Start the threads
-# send_thread.start()
-
-# # Join the threads
-# send_thread.join()
-# receive_thread.join()
-
-# # Close the client socket
-# client.close()
-
-
-
 
 root.mainloop()
